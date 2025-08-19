@@ -22,7 +22,7 @@ class TransactionRepositoryTest {
         @Test
         @Sql(scripts = {"/db/data.sql"})
         void retrieveTransactionByAccountNumber() {
-            String accountNumber = "0123456789";
+            String accountNumber = "123456789";
             Pageable pageable = PageRequest.of(0, 5);
             Page<Transaction> transactions = transactionRepository.readByAccountNumber(accountNumber, pageable);
             assertThat(transactions).isNotNull();
