@@ -7,6 +7,7 @@ import com.litebank.dtos.response.TransactionStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
 
@@ -19,6 +20,7 @@ public class AccountServiceTest {
     AccountService accountService;
 
     @Test
+    @Sql(scripts = {"/db/data.sql"})
     void testCanDeposit(){
         DepositRequest depositRequest = new DepositRequest();
         depositRequest.setAccountNumber("987654321");
@@ -28,5 +30,6 @@ public class AccountServiceTest {
         DepositResponse depositResponse = accountService.deposit(depositRequest);
         assertNotNull(depositResponse);
         assertEquals(depositResponse.getTransactionStatus(), TransactionStatus.SUCCESS);
+
     }
 }

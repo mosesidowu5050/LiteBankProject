@@ -1,9 +1,7 @@
-package com.litebank.service;
+package com.litebank.dtos.response;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import java.math.BigDecimal;
 
 @Setter
 @Getter
