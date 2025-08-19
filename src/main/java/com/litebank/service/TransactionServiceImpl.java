@@ -6,6 +6,7 @@ import com.litebank.dtos.response.CreateTransactionResponse;
 import com.litebank.dtos.response.TransactionResponse;
 import com.litebank.model.Transaction;
 import com.litebank.repository.TransactionRepository;
+import com.litebank.util.ProjectUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
 import java.util.List;
+
+import static com.litebank.util.ProjectUtil.*;
 
 @Slf4j
 @Service
@@ -70,9 +73,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionResponse> getTransactionsFor(String accountNumber, int page, int size) {
-        validateAccountPage(page, size);
-
+        if (page < 1) page = DEFAULT_PAGE_NUMBER;
         page = page -1;
+        if (size <= 0) size = DEFAULT_PAGE_SIZE;
+
         Pageable pageable = PageRequest.of(page, size);
         Page<Transaction> transactions = transactionRepository.retrieveTransactionsByAccountNumber(accountNumber, pageable);
         Type listType = new TypeToken<List<TransactionResponse>>(){}.getType();
@@ -81,13 +85,5 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionResponses;
     }
 
-    private void validateAccountPage(int page, int size) {
-        boolean isNotValidPage = page < 1;
-        boolean isNotValidSize = size <= 0 || size > transactionRepository.count();
-
-        if (isNotValidPage || isNotValidSize) {
-            throw new IllegalArgumentException("Invalid page or size parameters");
-        }
-    }
 
 }
