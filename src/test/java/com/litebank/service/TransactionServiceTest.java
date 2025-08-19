@@ -8,11 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Slf4j
@@ -38,6 +41,22 @@ public class TransactionServiceTest {
         log.info("transaction response---> {}", transaction);
         assertThat(transaction).isNotNull();
         assertThat(transaction.getAmount()).isEqualTo(transactionRequest.getAmount().toString());
+    }
 
+    @Test
+    @Sql(scripts = {"/db/data.sql"})
+    void testCanGetTransactionsByAccountNumber() {
+        List<TransactionResponse> transactions = transactionService.getTransactionsFor("123456789", 1, 5);
+        assertThat(transactions).isNotNull();
+        assertThat(transactions.size()).isEqualTo(5);
+    }
+
+    @Test
+    @Sql(scripts = {"/db/data.sql"})
+    void testThrowExceptionWhenPageAndSizeAreInvalid() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            transactionService.getTransactionsFor("123456789", -1, 0);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Invalid page or size parameters");
     }
 }

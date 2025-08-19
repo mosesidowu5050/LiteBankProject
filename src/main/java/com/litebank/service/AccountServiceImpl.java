@@ -3,10 +3,7 @@ package com.litebank.service;
 import com.litebank.dtos.request.CreateTransactionRequest;
 import com.litebank.dtos.request.DepositRequest;
 import com.litebank.dtos.request.TransactionType;
-import com.litebank.dtos.response.CreateTransactionResponse;
-import com.litebank.dtos.response.DepositResponse;
-import com.litebank.dtos.response.TransactionStatus;
-import com.litebank.dtos.response.ViewAccountResponse;
+import com.litebank.dtos.response.*;
 import com.litebank.exception.AccountNotFoundException;
 import com.litebank.model.Account;
 import com.litebank.repository.AccountRepository;
@@ -14,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,10 +34,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public ViewAccountResponse viewDetailsFor(String accountNumber) {
-//        List<TransactionResponse> transactions = transactionService.getTransactionsFor()
+//        List<TransactionResponse> transactions = transactionService.getTransactionsFor(accountNumber, 0, 0);
         return null;
 
     }
+
 
     private static DepositResponse getDepositResponse(CreateTransactionResponse transactionResponse) {
         DepositResponse depositResponse = new DepositResponse();

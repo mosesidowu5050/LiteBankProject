@@ -13,6 +13,6 @@ public interface TransactionService {
 
     TransactionResponse getTransactionBy(String id);
 
-    List<TransactionResponse> getTransactionsFor();
+    List<TransactionResponse> getTransactionsFor(String accountNumber, int page, int size);
 
 }

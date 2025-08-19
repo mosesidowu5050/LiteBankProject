@@ -1,17 +1,24 @@
 package com.litebank.service;
 
+import aj.org.objectweb.asm.TypeReference;
 import com.litebank.dtos.request.CreateTransactionRequest;
 import com.litebank.dtos.response.CreateTransactionResponse;
 import com.litebank.dtos.response.TransactionResponse;
-import com.litebank.exception.TransactionIdNotFoundException;
 import com.litebank.model.Transaction;
 import com.litebank.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
@@ -62,7 +69,25 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionResponse> getTransactionsFor() {
-        return List.of();
+    public List<TransactionResponse> getTransactionsFor(String accountNumber, int page, int size) {
+        validateAccountPage(page, size);
+
+        page = page -1;
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Transaction> transactions = transactionRepository.retrieveTransactionsByAccountNumber(accountNumber, pageable);
+        Type listType = new TypeToken<List<TransactionResponse>>(){}.getType();
+        List<TransactionResponse> transactionResponses = modelMapper.map(transactions.getContent(), listType);
+        log.info("Retrieved {} transactions for account number {}", transactionResponses.size(), accountNumber);
+        return transactionResponses;
     }
+
+    private void validateAccountPage(int page, int size) {
+        boolean isNotValidPage = page < 1;
+        boolean isNotValidSize = size <= 0 || size > transactionRepository.count();
+
+        if (isNotValidPage || isNotValidSize) {
+            throw new IllegalArgumentException("Invalid page or size parameters");
+        }
+    }
+
 }
