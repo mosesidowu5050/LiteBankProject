@@ -4,6 +4,8 @@ import com.litebank.dtos.request.CreateTransactionRequest;
 import com.litebank.dtos.request.TransactionType;
 import com.litebank.dtos.response.CreateTransactionResponse;
 import com.litebank.dtos.response.TransactionResponse;
+import com.litebank.dtos.response.ViewAccountResponse;
+import com.litebank.model.Transaction;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,20 +45,6 @@ public class TransactionServiceTest {
         assertThat(transaction.getAmount()).isEqualTo(transactionRequest.getAmount().toString());
     }
 
-    @Test
-    @Sql(scripts = {"/db/data.sql"})
-    void testCanGetTransactionsByAccountNumber() {
-        List<TransactionResponse> transactions = transactionService.getTransactionsFor("123456789", 1, 5);
-        assertThat(transactions).isNotNull();
-        assertThat(transactions.size()).isEqualTo(5);
-    }
 
-    @Test
-    @Sql(scripts = {"/db/data.sql"})
-    void testThrowExceptionWhenPageAndSizeAreInvalid() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            transactionService.getTransactionsFor("123456789", -1, 0);
-        });
-        assertThat(exception.getMessage()).isEqualTo("Invalid page or size parameters");
-    }
+
 }

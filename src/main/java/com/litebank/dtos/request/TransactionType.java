@@ -2,10 +2,9 @@ package com.litebank.dtos.request;
 
 public enum TransactionType {
 
-    DEBIT,
-    CREDIT,
-    TRANSFER,
+    DEPOSIT,
     WITHDRAWAL,
-    DEPOSIT
+    TRANSFER,
+    CREDIT
 }
 

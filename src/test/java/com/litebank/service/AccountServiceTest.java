@@ -4,6 +4,7 @@ import com.litebank.dtos.request.DepositRequest;
 import com.litebank.dtos.request.PaymentMethod;
 import com.litebank.dtos.response.DepositResponse;
 import com.litebank.dtos.response.TransactionStatus;
+import com.litebank.dtos.response.ViewAccountResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,25 +12,33 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Sql(scripts = {"/db/data.sql"})
 public class AccountServiceTest {
 
     @Autowired
     AccountService accountService;
 
     @Test
-    @Sql(scripts = {"/db/data.sql"})
     void testCanDeposit(){
         DepositRequest depositRequest = new DepositRequest();
-        depositRequest.setAccountNumber("987654321");
+        depositRequest.setAccountNumber("123456789");
         depositRequest.setAmount(new BigDecimal("1000.00"));
         depositRequest.setPaymentMethod(PaymentMethod.CARD);
 
         DepositResponse depositResponse = accountService.deposit(depositRequest);
         assertNotNull(depositResponse);
-        assertEquals(depositResponse.getTransactionStatus(), TransactionStatus.SUCCESS);
+        assertEquals(TransactionStatus.SUCCESS, depositResponse.getTransactionStatus());
+    }
 
+    @Test
+    void testCanViewAccount() {
+        ViewAccountResponse response = accountService.viewDetailsFor("123456789");
+
+        assertThat(response).isNotNull();
+        assertThat(response.getBalance()).isEqualTo(new BigDecimal("370000.00").toString());
     }
 }

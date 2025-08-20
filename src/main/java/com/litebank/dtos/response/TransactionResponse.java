@@ -1,5 +1,6 @@
 package com.litebank.dtos.response;
 
+import com.litebank.dtos.request.TransactionType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,5 +9,6 @@ import lombok.Setter;
 public class TransactionResponse {
 
     private String amount;
+    private TransactionType transactionType;
 
 }

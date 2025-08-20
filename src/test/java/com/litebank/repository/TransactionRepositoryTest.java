@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
+@Sql(scripts = {"/db/data.sql"})
 class TransactionRepositoryTest {
 
         @Autowired
@@ -20,7 +21,6 @@ class TransactionRepositoryTest {
 
 
         @Test
-        @Sql(scripts = {"/db/data.sql"})
         void retrieveTransactionByAccountNumber() {
             String accountNumber = "123456789";
             Pageable pageable = PageRequest.of(0, 5);
@@ -28,4 +28,6 @@ class TransactionRepositoryTest {
             assertThat(transactions).isNotNull();
             assertThat(transactions.getContent().size()).isEqualTo(5);
         }
+
+
 }

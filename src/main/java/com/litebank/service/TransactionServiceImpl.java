@@ -72,18 +72,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionResponse> getTransactionsFor(String accountNumber, int page, int size) {
-        if (page < 1) page = DEFAULT_PAGE_NUMBER;
-        page = page -1;
-        if (size <= 0) size = DEFAULT_PAGE_SIZE;
+    public List<TransactionResponse> getTransactionsFor(String accountNumber) {
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Transaction> transactions = transactionRepository.retrieveTransactionsByAccountNumber(accountNumber, pageable);
+        List<Transaction> transactions = transactionRepository.findTransactionByAccountNumber(accountNumber);
         Type listType = new TypeToken<List<TransactionResponse>>(){}.getType();
-        List<TransactionResponse> transactionResponses = modelMapper.map(transactions.getContent(), listType);
-        log.info("Retrieved {} transactions for account number {}", transactionResponses.size(), accountNumber);
-        return transactionResponses;
+        return modelMapper.map(transactions, listType);
     }
-
 
 }
