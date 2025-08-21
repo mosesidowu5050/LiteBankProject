@@ -2,8 +2,8 @@ package com.litebank.controller;
 
 import com.litebank.dtos.request.DepositRequest;
 import com.litebank.dtos.response.DepositResponse;
-import com.litebank.dtos.response.TransactionResponse;
-import com.litebank.model.Transaction;
+import com.litebank.dtos.response.ErrorResponse;
+import com.litebank.exception.AccountNotFoundException;
 import com.litebank.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,13 +21,13 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping
-    public ResponseEntity<?> createAccount(DepositRequest depositRequest) {
+    public ResponseEntity<?> deposit(DepositRequest depositRequest) {
         try {
-            DepositResponse depositResponse = accountService.deposit(depositRequest);
-            return new ResponseEntity<>(depositResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.CREATED).body(accountService.deposit(depositRequest));
+        } catch (AccountNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse<>(e.getMessage()));
         }
-
     }
+
 }

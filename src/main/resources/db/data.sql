@@ -1,8 +1,10 @@
 truncate table account cascade;
 truncate table transaction cascade;
 
-insert into account (id, account_number) values (
-    1, '123456789');
+insert into account (id, name, username, password, account_number)
+values (
+    1, 'Moses', 'mdempire', 'password', '123456789');
+
 
 insert into transaction (id, amount, account_number, transaction_type)
 values (

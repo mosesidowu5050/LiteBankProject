@@ -11,17 +11,25 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Sql(scripts = {"/db/data.sql"})
 class AccountRepositoryTest {
 
     @Autowired
     private AccountRepository accountRepository;
 
     @Test
-    @Sql(scripts = {"/db/data.sql"})
     void findByAccountNumber(){
         Optional<Account> accountNumber = accountRepository.findByAccountNumber("123456789");
         Account customerAccount = accountNumber.orElseThrow(RuntimeException::new);
         assertNotNull(customerAccount);
+    }
+
+    @Test
+    void canFindByAccountUsername() {
+        Account account = accountRepository.getAccountByUsername("mdempire")
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        assertNotNull(account);
+        assertEquals("mdempire", account.getUsername());
     }
 
 }
