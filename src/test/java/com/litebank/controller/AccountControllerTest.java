@@ -3,6 +3,7 @@ package com.litebank.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.litebank.dtos.request.DepositRequest;
 import com.litebank.dtos.request.PaymentMethod;
+import com.litebank.dtos.request.RegisterRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -38,9 +39,26 @@ class AccountControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post(depositEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
     }
 
+    @Test
+    void testCanCreateAccount() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setName("Suliyat Olanrewaju");
+        registerRequest.setUsername("sulisu");
+        registerRequest.setPassword("password123");
+
+        String json = mapper.writeValueAsString(registerRequest);
+        String registerEndpoint = "/api/v1/account/create-account";
+
+        mockMvc.perform(MockMvcRequestBuilders.post(registerEndpoint)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andDo(MockMvcResultHandlers.print());
+    }
 
 }
