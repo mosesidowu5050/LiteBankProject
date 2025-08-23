@@ -36,6 +36,7 @@ class AccountControllerTest {
         String json = mapper.writeValueAsString(depositRequest);
 
         String depositEndpoint = "/api/v1/account/deposit";
+
         mockMvc.perform(MockMvcRequestBuilders.post(depositEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
