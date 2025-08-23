@@ -2,9 +2,8 @@ package com.litebank.service;
 
 import com.litebank.dtos.request.DepositRequest;
 import com.litebank.dtos.request.PaymentMethod;
-import com.litebank.dtos.response.DepositResponse;
-import com.litebank.dtos.response.TransactionStatus;
-import com.litebank.dtos.response.ViewAccountResponse;
+import com.litebank.dtos.request.RegisterRequest;
+import com.litebank.dtos.response.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,5 +39,18 @@ public class AccountServiceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getBalance()).isEqualTo(new BigDecimal("370000.00").toString());
+    }
+
+    @Test
+    void testCanCreateAccount(){
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setName("Suliyat Olanrewaju");
+        registerRequest.setUsername("sulisu");
+        registerRequest.setPassword("password123");
+
+        RegisterResponse response = accountService.createAccount(registerRequest);
+        assertThat(response).isNotNull();
+        assertEquals(AccountStatus.SUCCESS, response.getAccountStatus());
+        assertNotNull(response.getAccountNumber());
     }
 }

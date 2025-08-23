@@ -2,18 +2,19 @@ package com.litebank.service;
 
 import com.litebank.dtos.request.CreateTransactionRequest;
 import com.litebank.dtos.request.DepositRequest;
+import com.litebank.dtos.request.RegisterRequest;
 import com.litebank.dtos.request.TransactionType;
 import com.litebank.dtos.response.*;
 import com.litebank.exception.AccountNotFoundException;
-import com.litebank.model.Transaction;
+import com.litebank.model.Account;
 import com.litebank.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
+import static com.litebank.util.ProjectUtil.*;
 import static java.math.BigDecimal.ZERO;
 
 @Service
@@ -22,6 +23,35 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final TransactionService transactionService;
+
+
+    @Override
+    public RegisterResponse createAccount(RegisterRequest registerAccount) {
+        Account account = getRegisteredAccount(registerAccount);
+
+        String accountNumber = generateAccountNumber();
+        account.setAccountNumber(accountNumber);
+        accountRepository.save(account);
+
+        return getRegisterResponse(accountNumber);
+    }
+
+    private static RegisterResponse getRegisterResponse(String accountNumber) {
+        RegisterResponse registerResponse = new RegisterResponse();
+        registerResponse.setAccountStatus(AccountStatus.SUCCESS);
+        registerResponse.setMessage(ACCOUNT_CREATED_SUCCESSFULLY);
+        registerResponse.setAccountNumber(accountNumber);
+
+        return registerResponse;
+    }
+
+    private static Account getRegisteredAccount(RegisterRequest registerAccount) {
+        Account account = new Account();
+        account.setName(registerAccount.getName());
+        account.setUsername(registerAccount.getUsername());
+        account.setPassword(registerAccount.getPassword());
+        return account;
+    }
 
     @Override
     public DepositResponse deposit(DepositRequest depositRequest) {
@@ -51,6 +81,8 @@ public class AccountServiceImpl implements AccountService {
 
         return viewAccountResponse;
     }
+
+
 
     private static TransactionResponse calculateAccountBalanceFrom(TransactionResponse a, TransactionResponse b, TransactionResponse transactionResponse) {
         BigDecimal total = ZERO;
@@ -105,5 +137,18 @@ public class AccountServiceImpl implements AccountService {
         createTransactionRequest.setAccountNumber(depositRequest.getAccountNumber());
         createTransactionRequest.setTransactionType(TransactionType.CREDIT);
         return createTransactionRequest;
+    }
+
+    private String generateAccountNumber() {
+        String accountNumber;
+        do {
+            StringBuilder randomAccountNumber = new StringBuilder(10);
+            randomAccountNumber.append((int) (Math.random() * 9) + 1);
+            for (int count = 1; count < 10; count++) {
+                randomAccountNumber.append((int) (Math.random() * 10));
+            }
+            accountNumber = randomAccountNumber.toString();
+        } while (accountRepository.findByAccountNumber(accountNumber).isPresent());
+        return accountNumber;
     }
 }
